@@ -1,0 +1,82 @@
+
+<md-content class="md-padding" layout-gt-sm="row" layout="column" ng-cloak>
+
+    <div flex-gt-sm="30">
+        <md-card>
+
+            <md-card-title layout-sm="row" layout="column">
+                <md-card-title-media layout="column" layout-align="center center" layout-margin>
+                    <div class="md-media-sm card-media">
+                        <img src="/media/images/person-flat.png">
+                    </div>
+                </md-card-title-media>
+
+                <md-card-title-text layout-margin>
+                    <span class="md-headline">{{user.name}}</span>
+                    <span class="md-subhead">{{user.email}}</span>
+                    <span class="md-subhead">{{user.money}} галактических кредитов</span>
+                </md-card-title-text>
+            </md-card-title>
+
+            <md-card-actions layout="row" layout-align="space-between center">
+                <md-button class="md-raised md-primary" ng-click="getMoney()">Пополнить счёт</md-button>
+                <md-button class="md-warn" ng-click="exit()">Выйти</md-button>
+            </md-card-actions>
+        </md-card>
+    </div>
+
+    <div flex-gt-sm="70">
+
+        <md-card layout="column">
+            <md-list ng-cloak>
+
+                <md-list-item>
+                    <p>Какое-то блюдо дня</p>
+                    <p>Статус</p>
+                    <p>Таймер</p>
+                </md-list-item>
+
+                <md-list-item>
+                    <p>Какое-то блюдо дня</p>
+                    <p>Статус</p>
+                    <p>Таймер</p>
+                </md-list-item>
+
+                <md-list-item>
+                    <p>Какое-то блюдо дня</p>
+                    <p class="md-warn">Ошибка</p>
+                    <md-icon class="md-secondary md-primary" ng-click=""> block </md-icon>
+                    <md-icon class="md-secondary md-primary" ng-click=""> loop </md-icon>
+                </md-list-item>
+            </md-list>
+        </md-card>
+
+        <div ng-cloak>
+            <md-content class="md-padding" layout-xs="column" layout="row">
+                <div flex-xs flex-gt-xs="33" layout="column" ng-repeat="menu in menuParted">
+                    <md-card ng-repeat="tile in menu">
+                        <img ng-src="{{tile.image}}" class="md-card-image" alt="Washed Out">
+                        <md-card-title>
+                            <md-card-title-text>
+                                <span class="md-headline">{{tile.title}}</span>
+                                <span class="md-subhead" ng-show="tile.price > user.money">
+                                    пополните баланс на {{tile.price - user.money}} кредитов
+                                </span>
+                            </md-card-title-text>
+                        </md-card-title>
+                        <md-card-content>
+                            <p>{{tile.price}} кредитов</p>
+                        </md-card-content>
+                        <md-card-actions layout="row" layout-align="end center">
+                            <md-button class="md-icon-button" aria-label="Favorite" ng-show="tile.price <= user.money">
+                                <md-icon  class="md-secondary md-primary" ng-click="buy(tile)"> add_shopping_cart </md-icon>
+                            </md-button>
+                        </md-card-actions>
+                    </md-card>
+                </div>
+            </md-content>
+        </div>
+
+    </div>
+
+</md-content>

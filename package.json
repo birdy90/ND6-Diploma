@@ -1,0 +1,31 @@
+{
+  "name": "nd6diploma",
+  "version": "1.0.0",
+  "description": "Kitchen application for robotic delivery",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/birdy90/ND6-Diploma.git"
+  },
+  "author": "Grigory Bederdinov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/birdy90/ND6-Diploma/issues"
+  },
+  "homepage": "https://github.com/birdy90/ND6-Diploma#readme",
+  "dependencies": {
+    "angular": "^1.6.5",
+    "angular-animate": "^1.6.5",
+    "angular-aria": "^1.6.5",
+    "angular-material": "^1.1.4",
+    "angular-resource": "^1.6.5",
+    "angular-route": "^1.6.5",
+    "chai": "^4.1.1",
+    "express": "^4.15.3",
+    "mocha": "^3.5.0",
+    "socketio": "^1.0.0"
+  }
+}

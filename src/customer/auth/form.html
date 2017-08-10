@@ -1,0 +1,28 @@
+<md-dialog flex="30">
+    <form ng-cloak name="loginForm" ng-submit="submit()">
+        <md-dialog-content>
+            <div class="md-dialog-content" layout="column">
+                <h2>Представьтесь, пожалуйста</h2>
+                <p>Чтобы сделать заказ в нашем ресторане, Вам необходимо заполнить форму</p>
+                <div layout="column">
+                    <md-input-container>
+                        <label>Имя</label>
+                        <input name="name" ng-model="user.name" type="text" required>
+                    </md-input-container>
+
+                    <md-input-container>
+                        <label>Email</label>
+                        <input name="email" ng-model="user.email" type="email" required>
+                    </md-input-container>
+                </div>
+            </div>
+        </md-dialog-content>
+
+        <md-dialog-actions layout="row">
+            <md-button type="submit">
+                Отправить
+            </md-button>
+        </md-dialog-actions>
+    </form>
+</md-dialog>
+
