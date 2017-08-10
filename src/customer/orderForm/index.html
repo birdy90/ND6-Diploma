@@ -33,9 +33,9 @@
                 <md-list-item ng-repeat="order in orders">
                     <p>{{order.title}}</p>
                     <p>{{order.state.title}}</p>
+
                     <p>Таймер</p>
 
-                    <p class="md-warn">Ошибка</p>
                     <md-icon class="md-secondary md-primary" ng-click="" aria-label="block" ng-show="order.state === states.failed"> block </md-icon>
                     <md-icon class="md-secondary md-primary" ng-click="" aria-label="loop" ng-show="order.state === states.failed"> loop </md-icon>
                 </md-list-item>
@@ -43,7 +43,8 @@
         </md-card>
 
         <div ng-cloak>
-            <md-content class="md-padding" layout-xs="column" layout="row">
+            <h2 class="md-padding">Меню</h2>
+            <md-content layout-xs="column" layout="row">
                 <div flex-xs flex-gt-xs="33" layout="column" ng-repeat="menu in menuParted">
                     <md-card ng-repeat="tile in menu">
                         <img ng-src="{{tile.image}}" class="md-card-image" alt="{{tile.title}}">

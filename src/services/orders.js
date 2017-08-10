@@ -10,7 +10,7 @@ customerApp.factory('OrdersService', function($http) {
   let menu = null;
   let menuParted = null;
 
-  let orders = [];
+  let orders = []; // todo: get orders from DB
 
   return {
     states: states,

@@ -1,7 +1,7 @@
 customerApp.factory('UserService', function() {
   let user = {
-    name: 'Григорий Бедердинов',
-    email: 'gob@live.ru',
+    name: '',
+    email: '',
     money: 100,
   };
 
