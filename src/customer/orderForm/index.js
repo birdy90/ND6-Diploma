@@ -1,7 +1,7 @@
 'use strict';
 
 customerApp
-  .controller('CustomerOrderFormController', function($scope, $http, $mdDialog, $location, UserService) {
+  .controller('CustomerOrderFormController', function($scope, $http, $mdDialog, $location, UserService, OrdersService) {
     if (UserService.user.name === '') {
       $location.path('/');
     }
@@ -9,12 +9,20 @@ customerApp
     $scope.user = UserService.user;
     $scope.imagePath = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIipQaS685K05hq4A8MynuP86nl9cKSMRVB6TVAScZmIKkkRi2AA';
 
-    $scope.menu = null;
+    $scope.states = OrdersService.states;
+    $scope.orders = OrdersService.orders;
 
-    $http.get('/media/menu.json')
-      .then(function (data) {
-        $scope.menu = data.data;
-        $scope.menuParted = chunkify($scope.menu, 3, true);
+    $scope.menu = [];
+    $scope.menuParted = [];
+
+    OrdersService.getMenu()
+      .then(({menu, menuParted}) => {
+        OrdersService.menu = menu;
+        OrdersService.menuParted = menuParted;
+
+        $scope.menu = OrdersService.menu;
+        $scope.menuParted = OrdersService.menuParted;
+        $scope.$apply();
       });
 
     $scope.exit = () => {
@@ -27,7 +35,8 @@ customerApp
     };
 
     $scope.buy = (item) => {
-      UserService.buy(item.price)
+      UserService.buy(item.price);
+      OrdersService.addOrder(item);
     }
   });
 

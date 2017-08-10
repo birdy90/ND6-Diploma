@@ -1,12 +1,9 @@
-const fs = require('fs');
 const express = require('express');
 const app = express();
 
-const dataOptions = {encoding: 'utf8'};
-
 const start = (port) =>
 {
-  port = port || 3000;
+  port = port || 8000;
 
   app.use(express.static(__dirname + '/src'));
 
@@ -28,18 +25,6 @@ const start = (port) =>
   });
 
   app.listen(port);
-};
-
-const read = (path) => {
-  return new Promise((done, fail) => {
-    fs.readFile(path, dataOptions, (err, data) => {
-      if (err) {
-        fail(err);
-      } else {
-        done(data);
-      }
-    });
-  });
 };
 
 module.exports = {start};
