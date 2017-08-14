@@ -1,5 +1,5 @@
 'use strict';
-const customerApp = angular.module('kitchen', ['ngRoute', 'ngMaterial']);
+const customerApp = angular.module('kitchen', ['ngRoute', 'ngResource', 'ngMaterial']);
 
 customerApp
   .config(function($mdThemingProvider) {

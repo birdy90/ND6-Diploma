@@ -1,4 +1,4 @@
-customerApp.factory('OrdersService', function($http) {
+customerApp.factory('OrdersService', function($http, $resource) {
   const states = {
     ordered: {id: 1, title: 'Заказано'},
     cooking: {id: 2, title: 'Готовится'},
@@ -7,12 +7,16 @@ customerApp.factory('OrdersService', function($http) {
     served: {id: 5, title: 'Подано'},
   };
 
+  const apiUrl = 'http://localhost:8000/api/orders/:id';
+
   let menu = null;
   let menuParted = null;
 
   let orders = []; // todo: get orders from DB
 
   return {
+    db: $resource(apiUrl, {id: '@id'}),
+
     states: states,
     orders: orders,
     menu: menu,

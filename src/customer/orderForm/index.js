@@ -35,8 +35,17 @@ customerApp
     };
 
     $scope.buy = (item) => {
+      console.log(item);
+      console.log('buy clicked');
       UserService.buy(item.price);
       OrdersService.addOrder(item);
+      let order = new OrdersService.db({test: 'test'});
+      order.test2 = 'rtyqwe';
+      order.$save({test3: 'test1'}, data => {
+        console.log('success: ' + data);
+      }, data => {
+        console.log('error: ' + data);
+      });
     }
   });
 

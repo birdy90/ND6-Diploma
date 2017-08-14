@@ -1,17 +1,38 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const app = express();
+const api = require('./api');
+
 
 const start = (port) =>
 {
   port = port || 8000;
 
   app.use(express.static(__dirname + '/src'));
+  app.use(bodyParser.urlencoded({ extended: false }));
 
-  app.get(/\/media\/(.*)/, (req, res) => { res.sendfile('./src/static/' + req.params[0]); });
-  app.get(/\/static\/(.*)/, (req, res) => { res.sendfile('./src/' + req.params[0]); });
-  app.get(/\/services\/(.*)/, (req, res) => { res.sendfile('./src/services/' + req.params[0]); });
-  app.get(/\/node_modules\/(.*)/, (req, res) => { res.sendfile('./node_modules/' + req.params[0]); });
+  handleStaticRoutes();
+  handleClientApps();
+  handleApi();
+  handleErrors();
 
+  app.listen(port);
+};
+
+const handleStaticRoutes = () => {
+  const requestPaths = [
+    {'in': 'media', 'out': './src/static/'},
+    {'in': 'static', 'out': './src/'},
+    {'in': 'services', 'out': './src/services/'},
+    {'in': 'node_modules', 'out': './node_modules/'},
+  ];
+  requestPaths.forEach((item) => {
+    const re = new RegExp(`/${item.in}/(.*)`);
+    app.get(re, (req, res) => { res.sendfile(item.out + req.params[0]); });
+  });
+};
+
+const handleClientApps = () => {
   app.get(/\//, (req, res) => {
     res.sendfile('./src/customer/index.html')
   });
@@ -19,12 +40,16 @@ const start = (port) =>
   app.get(/\/kitchen/, (req, res) => {
     res.send('Hello, you\'re at kitchen!');
   });
+};
 
+const handleApi = () => {
+  api.register(app);
+};
+
+const handleErrors = () => {
   app.use((err, req, res, next) => {
     res.status(500).send(err.toString());
   });
-
-  app.listen(port);
 };
 
 module.exports = {start};

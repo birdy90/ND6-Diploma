@@ -23,9 +23,11 @@
     "angular-material": "^1.1.4",
     "angular-resource": "^1.6.5",
     "angular-route": "^1.6.5",
+    "body-parser": "^1.17.2",
     "chai": "^4.1.1",
     "express": "^4.15.3",
     "mocha": "^3.5.0",
+    "mongodb": "^2.2.31",
     "netology-fake-drone-api": "^1.0.1",
     "socketio": "^1.0.0"
   }
