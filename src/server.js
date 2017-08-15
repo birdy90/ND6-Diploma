@@ -8,8 +8,14 @@ const start = (port) =>
 {
   port = port || 8000;
 
+  app.use(function (req, res, next) {
+    console.log(`${req.method} ${req.url}`);
+    next();
+  });
+
+  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({extended: true}));
   app.use(express.static(__dirname + '/src'));
-  app.use(bodyParser.urlencoded({ extended: false }));
 
   handleStaticRoutes();
   handleClientApps();
@@ -21,10 +27,10 @@ const start = (port) =>
 
 const handleStaticRoutes = () => {
   const requestPaths = [
-    {'in': 'media', 'out': './src/static/'},
-    {'in': 'static', 'out': './src/'},
-    {'in': 'services', 'out': './src/services/'},
-    {'in': 'node_modules', 'out': './node_modules/'},
+    {in: 'media', out: './src/static/'},
+    {in: 'static', out: './src/'},
+    {in: 'services', out: './src/services/'},
+    {in: 'node_modules', out: './node_modules/'},
   ];
   requestPaths.forEach((item) => {
     const re = new RegExp(`/${item.in}/(.*)`);
@@ -33,11 +39,11 @@ const handleStaticRoutes = () => {
 };
 
 const handleClientApps = () => {
-  app.get(/\//, (req, res) => {
+  app.get(/^\/$/, (req, res) => {
     res.sendfile('./src/customer/index.html')
   });
 
-  app.get(/\/kitchen/, (req, res) => {
+  app.get(/^\/kitchen$/, (req, res) => {
     res.send('Hello, you\'re at kitchen!');
   });
 };
