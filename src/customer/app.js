@@ -1,7 +1,13 @@
 'use strict';
-const customerApp = angular.module('kitchen', ['ngRoute', 'ngResource', 'ngMaterial', 'angularMoment']);
 
-customerApp
+const app = angular.module('kitchen', [
+  'ngRoute',
+  'ngResource',
+  'ngMaterial',
+  'angularMoment'
+]);
+
+app
   .config(function($mdThemingProvider) {
     $mdThemingProvider.theme('default')
       .primaryPalette('deep-orange')

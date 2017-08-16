@@ -33,18 +33,18 @@ const handleStaticRoutes = () => {
     {in: 'node_modules', out: './node_modules/'},
   ];
   requestPaths.forEach((item) => {
-    const re = new RegExp(`/${item.in}/(.*)`);
+    const re = new RegExp(`/${item.in}/(.*)`, 'i');
     app.get(re, (req, res) => { res.sendfile(item.out + req.params[0]); });
   });
 };
 
 const handleClientApps = () => {
-  app.get(/^\/$/, (req, res) => {
+  app.get(/^\/$/i, (req, res) => {
     res.sendfile('./src/customer/index.html')
   });
 
-  app.get(/^\/kitchen$/, (req, res) => {
-    res.send('Hello, you\'re at kitchen!');
+  app.get(/^\/kitchen(\/)?$/i, (req, res) => {
+    res.sendfile('./src/chef/index.html')
   });
 };
 

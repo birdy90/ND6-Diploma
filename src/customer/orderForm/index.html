@@ -30,19 +30,23 @@
         <md-card layout="column" ng-show="orders.length > 0">
             <md-list ng-cloak>
 
-                <md-list-item ng-repeat="order in orders">
-                    <p>{{order.title}}</p>
-                    <p>{{order.status.title}}</p>
+                <md-list-item ng-repeat="order in orders" flex>
+                    <p flex = 'grow' layout-margin>{{order.title}}</p>
+                    <p flex layout-margin>{{order.status.title}}</p>
 
-                    <p ng-show="order.status.id !== statuses.failed.id || order.status.id !== statuses.failed.id">
+                    <p flex layout-margin ng-show="order.status.id !== statuses.failed.id || order.status.id !== statuses.failed.id">
                         {{endTime | amDifference : order.startTime : 'seconds' | secondsToTimeString }}
                     </p>
-                    <p ng-show="order.status.id === statuses.failed.id || order.status.id === statuses.failed.id">
+                    <p flex layout-margin ng-show="order.status.id === statuses.failed.id || order.status.id === statuses.failed.id">
                         {{order.endTime | amDifference : order.startTime : 'seconds' | secondsToTimeString }}
                     </p>
-                    <md-icon class="md-secondary md-primary" ng-click="" aria-label="block" ng-show="order.status.id === statuses.failed.id"> block </md-icon>
-                    <md-icon class="md-secondary md-primary" ng-click="" aria-label="loop" ng-show="order.status.id === statuses.failed.id"> loop </md-icon>
+                    <p flex layout-margin>
+                        <md-icon class="md-secondary md-primary" ng-click="" aria-label="Отменить" ng-show="order.status.id === statuses.failed.id"> block </md-icon>
+                        <md-icon class="md-secondary md-primary" ng-click="" aria-label="Повторить со скидкой" ng-show="order.status.id === statuses.failed.id"> loop </md-icon>
+                    </p>
+                    <md-divider ng-hide="$last"></md-divider>
                 </md-list-item>
+
             </md-list>
         </md-card>
 

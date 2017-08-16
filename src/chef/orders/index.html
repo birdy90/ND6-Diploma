@@ -1,0 +1,61 @@
+<div ng-cloak>
+    <md-content class="md-padding" layout-xs="column" layout="row">
+
+        <div flex-xs flex-gt-xs="50" layout="column">
+            <md-card>
+                <md-card-title>
+                    <md-card-title-text>
+                        <span class="md-headline">Заказанные блюда</span>
+                    </md-card-title-text>
+                </md-card-title>
+                <md-card-content>
+
+                    <md-list ng-cloak>
+
+                        <md-list-item ng-repeat="order in newOrders" flex>
+                            <p flex = 'grow' flex layout-margin>{{order.orders.title}}</p>
+
+                            <p flex layout-margin>
+                                <md-icon class="md-secondary md-primary" ng-click="startCooking(order)" aria-label="Начать готовить"> done </md-icon>
+                            </p>
+                            <md-divider ng-hide="$last"></md-divider>
+                        </md-list-item>
+
+                    </md-list>
+
+                </md-card-content>
+            </md-card>
+        </div>
+
+        <div flex-xs flex-gt-xs="50" layout="column">
+            <md-card>
+                <md-card-title>
+                    <md-card-title-text>
+                        <span class="md-headline">Готовящиеся блюда</span>
+                    </md-card-title-text>
+                </md-card-title>
+                <md-card-content>
+
+                    <md-list ng-cloak>
+
+                        <md-list-item ng-repeat="order in cookingOrders" flex>
+                            <p flex = 'grow' flex layout-margin>{{order.orders.title}}</p>
+
+                            <p flex layout-margin>
+                                {{endCooking | amDifference : order.orders.startCooking : 'seconds' | secondsToTimeString }}
+                            </p>
+
+                            <p flex layout-margin>
+                                <md-icon class="md-secondary md-primary" ng-click="" aria-label="Начать готовить"> done </md-icon>
+                            </p>
+                            <md-divider ng-hide="$last"></md-divider>
+                        </md-list-item>
+
+                    </md-list>
+
+                </md-card-content>
+            </md-card>
+        </div>
+
+    </md-content>
+</div>

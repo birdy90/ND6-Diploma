@@ -37,6 +37,33 @@ const registerApi = app => {
       .then(data => res.send({answer: data}));
   });
 
+  app.post(`${apiPrefix}/money/:email`, (req, res) => {
+    connect('orders')
+      .then(collection => collection.update({email: req.params.email}, {$set: {money: req.body.money}}))
+      .then(data => res.send({answer: 'ok'}));
+  });
+
+  // chef orders
+
+  app.get(`${apiPrefix}/chef/orders/:status`, (req, res) => {
+    connect('orders')
+      .then(collection => collection.aggregate([
+        {$unwind: {path: '$orders', includeArrayIndex: 'index'}},
+        {$match: {'orders.status.id': {$eq: parseInt(req.params.status)}}},
+      ]).toArray())
+      .then(data => res.send({answer: data}));
+  });
+
+  app.post(`${apiPrefix}/chef/orders/:status`, (req, res) => {
+    connect('orders')
+      .then(collection => collection.update({_id: mongodb.ObjectId(req.body.id)},
+        {$set: {
+          [`orders.${req.body.index}.status`]: {id: parseInt(req.params.status), title: req.body.statusName},
+          [`orders.${req.body.index}.startCooking`]: parseFloat(req.body.startCooking)
+        }}))
+      .then(data => res.send({answer: data}));
+  });
+
   // orders
 
   app.get(`${apiPrefix}/orders/:email`, (req, res) => {

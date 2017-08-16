@@ -1,6 +1,6 @@
 'use strict';
 
-customerApp
+app
   .controller('CustomerOrderFormController', function($scope, $http, $mdDialog, $location, UserService, OrdersService) {
     if (UserService.user().name === '') {
       $location.path('/');
@@ -24,9 +24,9 @@ customerApp
     $scope.statuses = OrdersService.statuses;
 
     $scope.orders = [];
-    OrdersService.getOrders()
+    OrdersService.getUserOrders()
       .then(orders => {
-        $scope.orders = orders;
+        $scope.orders = orders || [];
         $scope.$apply();
       });
 
@@ -46,10 +46,10 @@ customerApp
     };
 
     $scope.receiveMoney = () => {
-      UserService.user.money += 100;
+      UserService.setMoney(UserService.user().money + 100);
     };
 
-    $scope.buy = (item) => {
+    $scope.buy = item => {
       UserService.buy(item.price);
       const newItem = OrdersService.addOrder(item);
       $scope.orders.push(newItem);

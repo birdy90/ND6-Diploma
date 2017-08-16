@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ru" ng-app="kitchen">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Заказ блюда</title>
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <link href="/node_modules/angular-material/angular-material.css" rel="stylesheet" type="text/css" >
+
+
+    <script src="/node_modules/angular/angular.js"></script>
+    <script src="/node_modules/angular-route/angular-route.js"></script>
+    <script src="/node_modules/angular-resource/angular-resource.js"></script>
+
+    <script src="/node_modules/angular-animate/angular-animate.js"></script>
+    <script src="/node_modules/angular-aria/angular-aria.js"></script>
+    <script src="/node_modules/angular-material/angular-material.js"></script>
+
+    <script src="/node_modules/moment/moment.js"></script>
+    <script src="/node_modules/angular-moment/angular-moment.js"></script>
+</head>
+<body>
+
+<md-toolbar class="md-red">
+    <div class="md-toolbar-tools">
+        <h2 class="md-flex">Повар ресторана "На краю Вселенной"</h2>
+    </div>
+</md-toolbar>
+
+
+<ng-view></ng-view>
+
+<script src="/static/chef/app.js"></script>
+<script src="/services/auth.js"></script>
+<script src="/services/orders.js"></script>
+<script src="/static/chef/orders/index.js"></script>
+</body>
+</html>
