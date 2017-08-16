@@ -42,11 +42,11 @@
                             <p flex = 'grow' flex layout-margin>{{order.orders.title}}</p>
 
                             <p flex layout-margin>
-                                {{endCooking | amDifference : order.orders.startCooking : 'seconds' | secondsToTimeString }}
+                                {{endCookingTime | amDifference : order.orders.startCooking : 'seconds' | secondsToTimeString }}
                             </p>
 
                             <p flex layout-margin>
-                                <md-icon class="md-secondary md-primary" ng-click="" aria-label="Начать готовить"> done </md-icon>
+                                <md-icon class="md-secondary md-primary" ng-click="endCooking(order)" aria-label="Начать готовить"> done </md-icon>
                             </p>
                             <md-divider ng-hide="$last"></md-divider>
                         </md-list-item>

@@ -31,6 +31,15 @@ app
           startCooking: item.startCooking
         }, data => done(data.answer));
       }),
+      endCooking: item => new Promise((done, fail) => {
+        chefResource.save({
+          id: item._id,
+          index: item.index,
+          status: statuses.delivery.id,
+          statusName: statuses.delivery.title,
+          endCooking: item.endCooking
+        }, data => done(data.answer));
+      }),
 
       getUserOrders: () => new Promise((done, fail) => {
         resource.get({email: UserService.user().email}, data => {

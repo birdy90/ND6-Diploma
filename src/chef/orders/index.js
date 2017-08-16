@@ -2,9 +2,9 @@
 
 app
   .controller('ChefOrdersController', function($scope, $mdDialog, $location, OrdersService) {
-    $scope.endCooking = Date.now();
+    $scope.endCookingTime = Date.now();
     setInterval(() => {
-      $scope.endCooking = Date.now();
+      $scope.endCookingTime = Date.now();
       $scope.$apply();
     }, 1000);
 
@@ -12,14 +12,15 @@ app
     $scope.cookingOrders = [];
 
     const updateOrders = () => {
-      OrdersService.getCookingOrders()
-        .then(orders => {
-          $scope.cookingOrders = orders;
-          $scope.$apply();
-        });
+      $scope.endCookingTime = Date.now();
       OrdersService.getNewOrders()
         .then(orders => {
           $scope.newOrders = orders;
+          $scope.$apply();
+        });
+      OrdersService.getCookingOrders()
+        .then(orders => {
+          $scope.cookingOrders = orders;
           $scope.$apply();
         });
     };
@@ -30,5 +31,11 @@ app
       item.startCooking = Date.now();
       OrdersService.startCooking(item);
       updateOrders();
-    }
+    };
+
+    $scope.endCooking = item => {
+      item.endCooking = Date.now();
+      OrdersService.endCooking(item);
+      updateOrders();
+    };
   });

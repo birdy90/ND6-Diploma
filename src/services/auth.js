@@ -1,14 +1,14 @@
 app
   .factory('UserService', function($resource) {
     const emptyUser = {
-      name: 'gob@live.ru',
-      email: 'gob@live.ru',
+      name: '',
+      email: '',
       money: 0,
     };
     let user = emptyUser;
 
-    const userResource = $resource('http://localhost:8000/api/user/:email', {email: '@email'});
-    const moneyResource = $resource('http://localhost:8000/api/money/:email', {email: '@email'});
+    const userResource = $resource('/api/user/:email', {email: '@email'});
+    const moneyResource = $resource('/api/money/:email', {email: '@email'});
 
     return {
       user: () => user,

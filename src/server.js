@@ -3,6 +3,8 @@ const bodyParser = require('body-parser');
 const app = express();
 const api = require('./api');
 
+const http = require('http').Server(app);
+const io = require('socket.io')(http);
 
 const start = (port) =>
 {
