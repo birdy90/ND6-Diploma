@@ -14,7 +14,7 @@ customerApp.factory('OrdersService', function($http, $resource, UserService) {
 
     statuses: statuses,
     getOrders: () => new Promise((done, fail) => {
-      resource.get({email: UserService.user.email}, data => done(data.answer[0].orders));
+      resource.get({email: UserService.user().email}, data => done(data.answer[0].orders));
     }),
     getMenu: () => new Promise((done, fail) => {
       $http.get('/media/menu.json')
@@ -32,7 +32,7 @@ customerApp.factory('OrdersService', function($http, $resource, UserService) {
         status: statuses.ordered
       };
       resource.save({
-        user: UserService.user,
+        user: UserService.user(),
         item: newItem
       });
       newItem.title = item.title;
@@ -78,17 +78,4 @@ function chunkify(a, n, balanced) {
   }
 
   return out;
-}
-
-function timeFrom(startDate) {
-  var endDate = new Date()
-  var diff = endDate - now;
-
-  var hours   = Math.floor(diff / 3.6e6);
-  var minutes = Math.floor((diff % 3.6e6) / 6e4);
-  var seconds = Math.floor((diff % 6e4) / 1000);
-  console.log('Time remaining to ' + endDate.toISOString() +
-    ' or\n' + endDate.toString() + ' local is\n' +
-    hours + ' hours, ' +  minutes + ' minutes and ' +
-    seconds + ' seconds');
 }

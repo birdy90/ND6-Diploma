@@ -2,7 +2,7 @@
 
 customerApp
   .controller('CustomerOrderFormController', function($scope, $http, $mdDialog, $location, UserService, OrdersService) {
-    if (UserService.user.name === '') {
+    if (UserService.user().name === '') {
       $location.path('/');
     }
 
@@ -12,7 +12,7 @@ customerApp
       $scope.$apply();
     }, 1000);
 
-    $scope.user = UserService.user;
+    $scope.user = UserService.user();
     UserService.getMoney()
       .then(data => {
         $scope.user.money = data;
@@ -41,11 +41,11 @@ customerApp
       });
 
     $scope.exit = () => {
-      UserService.clear();
+      $scope.user = UserService.emptyUser;
       $location.path('/');
     };
 
-    $scope.getMoney = () => {
+    $scope.receiveMoney = () => {
       UserService.user.money += 100;
     };
 

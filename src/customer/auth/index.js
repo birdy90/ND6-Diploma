@@ -1,7 +1,7 @@
 'use strict';
 
 customerApp.controller('CustomerAuthController', function($scope, $mdDialog, $location, UserService) {
-  $scope.user = UserService.user;
+  $scope.user = {};
 
   $scope.$on('$viewContentLoaded', function(e){
     showPrompt($scope);
@@ -9,9 +9,13 @@ customerApp.controller('CustomerAuthController', function($scope, $mdDialog, $lo
 
   $scope.submit = () => {
     if ($scope.loginForm.$valid) {
-      $location.path("/list");
       $mdDialog.hide($scope.loginForm);
-      UserService.user = $scope.user;
+      UserService.getUser($scope.user)
+        .then(data => {
+          $scope.user = data;
+          $scope.$apply();
+          $location.path("/list");
+        });
     }
   };
 

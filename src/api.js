@@ -17,6 +17,20 @@ const registerApi = app => {
 
   // user
 
+  app.get(`${apiPrefix}/user/:email`, (req, res) => {
+    connect('orders')
+      .then(collection => collection.find({email: req.params.email}).toArray())
+      .then(data => res.send({answer: data}));
+  });
+
+  app.post(`${apiPrefix}/user`, (req, res) => {
+    connect('orders')
+      .then(collection => collection.insert(req.body.user))
+      .then(() => res.send({answer: 'ok'}));
+  });
+
+  // money
+
   app.get(`${apiPrefix}/money/:email`, (req, res) => {
     connect('orders')
       .then(collection => collection.find({email: req.params.email}).toArray())
@@ -24,12 +38,6 @@ const registerApi = app => {
   });
 
   // orders
-
-  // app.get(`${apiPrefix}/orders`, (req, res) => {
-  //   connect('orders')
-  //     .then(collection => collection.find({email: req.query.email}))
-  //     .then(data => res.send(data));
-  // });
 
   app.get(`${apiPrefix}/orders/:email`, (req, res) => {
     connect('orders')
