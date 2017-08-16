@@ -8,8 +8,8 @@ app
       served: {id: 5, title: 'Подано'},
     };
 
-    const chefResource = $resource('http://localhost:8000/api/chef/orders/:status', {status: '@status'});
-    const resource = $resource('http://localhost:8000/api/orders/:email', {email: '@email'});
+    const chefResource = $resource('/api/chef/orders/:status', {status: '@status'});
+    const resource = $resource('/api/orders/:email', {email: '@email'});
 
     return {
       db: resource,
