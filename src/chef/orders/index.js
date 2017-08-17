@@ -30,16 +30,13 @@ app
     updateOrders();
 
     $scope.startCooking = item => {
-      item.startCooking = Date.now();
-      OrdersService.startCooking(item);
+      OrdersService.startCooking(item, {startCooking: Date.now()});
       updateOrders();
       socket.emit('chefUpdatedStatus', {email: item.email});
     };
 
     $scope.endCooking = item => {
-      console.log(item);
-      item.endCooking = Date.now();
-      OrdersService.endCooking(item);
+      OrdersService.endCooking(item, {endCooking: Date.now()});
       updateOrders();
       socket.emit('chefUpdatedStatus', {email: item.email});
       socket.emit('startDelivery', {user: item, })
@@ -54,4 +51,12 @@ app
       $scope.$apply();
     });
     socket.on('newOrder', () => updateOrders());
+    socket.on('deliverySuccessfull', item => {
+      OrdersService.endDelivery(item, {}, true)
+        .then(() => socket.emit('chefUpdatedStatus', {email: item.email}));
+    });
+    socket.on('deliveryFailed', item => {
+      OrdersService.endDelivery(item, {}, false)
+        .then(() => socket.emit('chefUpdatedStatus', {email: item.email}));
+    });
   });

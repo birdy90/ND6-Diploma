@@ -11,6 +11,10 @@ app
     const chefResource = $resource('/api/chef/orders/:status', {status: '@status'});
     const resource = $resource('/api/orders/:email', {email: '@email'});
 
+    const updateChefResource = (data, params, callback) => {
+      chefResource.save(Object.assign(data, params), callback);
+    };
+
     return {
       db: resource,
 
@@ -22,23 +26,31 @@ app
         chefResource.get({status: statuses.cooking.id}, data => done(data.answer));
       }),
 
-      startCooking: item => new Promise((done, fail) => {
-        chefResource.save({
+      startCooking: (item, params) => new Promise((done, fail) => {
+        updateChefResource({
           id: item._id,
           index: item.index,
           status: statuses.cooking.id,
           statusName: statuses.cooking.title,
-          startCooking: item.startCooking
-        }, data => done(data.answer));
+        }, params, data => done(data.answer));
       }),
-      endCooking: item => new Promise((done, fail) => {
-        chefResource.save({
+      endCooking: (item, params) => new Promise((done, fail) => {
+        updateChefResource({
           id: item._id,
           index: item.index,
           status: statuses.delivery.id,
           statusName: statuses.delivery.title,
-          endCooking: item.endCooking
-        }, data => done(data.answer));
+        }, params, data => done(data.answer));
+      }),
+      endDelivery: (item, params, success) => new Promise((done, fail) => {
+        const status = success ? statuses.served : statuses.failed;
+        updateChefResource({
+          id: item._id,
+          index: item.index,
+          status: status.id,
+          statusName: status.title,
+        }, {}, params, data => done(data.answer));
+        chefResource.save()
       }),
 
       getUserOrders: () => new Promise((done, fail) => {

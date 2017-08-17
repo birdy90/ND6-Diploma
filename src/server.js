@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 const api = require('./api');
+const drones = require('netology-fake-drone-api');
 
 const http = require('http');
 const server = http.createServer(app);
@@ -66,6 +67,14 @@ io.on('connection', client => {
     const sessions = customers.filter((item) => item.email === data.email);
     sessions.forEach(item => item.socket.emit('refreshOrders'));
   });
+
+  client.on('startDelivery', data => {
+    const sessions = customers.filter((item) => item.email === data.email);
+    sessions.forEach(item => item.socket.emit('refreshOrders'));
+    drones.deliver(data, data.orders)
+      .then(client.emit('deliverySuccessfull', data))
+      .catch(client.emit('deliveryFailed', data));
+  })
 });
 
 const start = (port) =>
