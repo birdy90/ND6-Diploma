@@ -53,5 +53,6 @@ app
       UserService.buy(item.price);
       const newItem = OrdersService.addOrder(item);
       $scope.orders.push(newItem);
+      socket.emit('newOrder');
     }
   });

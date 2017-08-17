@@ -1,5 +1,9 @@
 'use strict';
 
+const socket = io(`http://${window.location.hostname}:8000`);
+
+socket.on('')
+
 const app = angular.module('kitchen', [
   'ngRoute',
   'ngResource',

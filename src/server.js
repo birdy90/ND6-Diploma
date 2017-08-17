@@ -3,8 +3,32 @@ const bodyParser = require('body-parser');
 const app = express();
 const api = require('./api');
 
-const http = require('http').Server(app);
-const io = require('socket.io')(http);
+const http = require('http');
+const server = http.createServer(app);
+
+const io = require('socket.io')(server);
+
+let chefs = [];
+let customers = [];
+
+io.on('connection', client => {
+  console.log(`new client ${client.id}`);
+  client.emit('connection');
+
+  client.on('handshake', id => {});
+
+  client.on('disconnect', () => {
+    console.log(`${client.id} disconnected`);
+    const sender = findUser(client);
+    if (sender === undefined) return;
+    const index = users.indexOf(sender);
+    users.splice(index, 1);
+    findReceivers(users, sender).forEach((item) => {
+      item.socket.emit('system', {message: `Пользователь ${sender.name} вышел из чата`});
+      item.socket.emit('system', {message: `Теперь в чате ${users.length} пользователей`});
+    });
+  });
+});
 
 const start = (port) =>
 {
@@ -24,7 +48,7 @@ const start = (port) =>
   handleApi();
   handleErrors();
 
-  app.listen(port);
+  server.listen(port);
 };
 
 const handleStaticRoutes = () => {
