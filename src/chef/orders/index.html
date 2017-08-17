@@ -1,3 +1,9 @@
+<md-toolbar ng-class="{'md-warn': !connected}">
+    <div class="md-toolbar-tools">
+        <h2 class="md-flex">Повар ресторана "На краю Вселенной" <span ng-show="!connected">(соединение потеряно)</span></h2>
+    </div>
+</md-toolbar>
+
 <div ng-cloak>
     <md-content class="md-padding" layout-xs="column" layout="row">
 
@@ -11,6 +17,8 @@
                 <md-card-content>
 
                     <md-list ng-cloak>
+
+                        <md-list-item flex ng-show="newOrders.length===0"><p>Нет заказов</p></md-list-item>
 
                         <md-list-item ng-repeat="order in newOrders" flex>
                             <p flex = 'grow' flex layout-margin>{{order.orders.title}}</p>
@@ -37,6 +45,8 @@
                 <md-card-content>
 
                     <md-list ng-cloak>
+
+                        <md-list-item flex ng-show="cookingOrders.length===0"><p>Ничего не готовится</p></md-list-item>
 
                         <md-list-item ng-repeat="order in cookingOrders" flex>
                             <p flex = 'grow' flex layout-margin>{{order.orders.title}}</p>

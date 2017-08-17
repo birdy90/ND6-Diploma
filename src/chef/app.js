@@ -1,5 +1,8 @@
 'use strict';
 
+let socket = io(`http://${window.location.hostname}:8000`);
+socket.emit('handshake', {type: 'chef'});
+
 const app = angular.module('kitchen', [
   'ngRoute',
   'ngResource',

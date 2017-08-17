@@ -1,8 +1,8 @@
 app
   .factory('UserService', function($resource) {
     const emptyUser = {
-      name: 'asd',
-      email: 'gob@live.ru',
+      name: '',
+      email: '',
       money: 0,
     };
     let user = emptyUser;

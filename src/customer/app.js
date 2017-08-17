@@ -1,8 +1,7 @@
 'use strict';
 
-const socket = io(`http://${window.location.hostname}:8000`);
-
-socket.on('')
+let socket = undefined;
+socket = io(`http://${window.location.hostname}:8000`);
 
 const app = angular.module('kitchen', [
   'ngRoute',

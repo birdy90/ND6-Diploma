@@ -14,6 +14,7 @@ app
         UserService.getUser($scope.user)
           .then(data => {
             $scope.user = data;
+            socket.emit('handshake', {type: 'customer', email: UserService.user().email});
             $scope.$apply();
             $location.path("/list");
           });

@@ -13,22 +13,28 @@ app
     }, 1000);
 
     $scope.user = UserService.user();
-    UserService.getMoney()
-      .then(data => {
-        $scope.user.money = data;
-        $scope.$apply();
-      });
+    const refreshMoney = () => {
+      UserService.getMoney()
+        .then(data => {
+          $scope.user.money = data;
+          $scope.$apply();
+        });
+    };
+    refreshMoney();
 
     $scope.imagePath = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIipQaS685K05hq4A8MynuP86nl9cKSMRVB6TVAScZmIKkkRi2AA';
 
     $scope.statuses = OrdersService.statuses;
 
     $scope.orders = [];
-    OrdersService.getUserOrders()
-      .then(orders => {
-        $scope.orders = orders || [];
-        $scope.$apply();
-      });
+    const refreshOrders = () => {
+      OrdersService.getUserOrders()
+        .then(orders => {
+          $scope.orders = orders || [];
+          $scope.$apply();
+        });
+    };
+    refreshOrders();
 
     $scope.menu = [];
     $scope.menuParted = [];
@@ -47,6 +53,7 @@ app
 
     $scope.receiveMoney = () => {
       UserService.setMoney(UserService.user().money + 100);
+      socket.emit('addMoney');
     };
 
     $scope.buy = item => {
@@ -54,5 +61,10 @@ app
       const newItem = OrdersService.addOrder(item);
       $scope.orders.push(newItem);
       socket.emit('newOrder');
-    }
+    };
+
+    socket.on('disconnect', () => $scope.exit());
+
+    socket.on('refreshOrders', () => refreshOrders());
+    socket.on('refreshMoney', () => refreshMoney());
   });

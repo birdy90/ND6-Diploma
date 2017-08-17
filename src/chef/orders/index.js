@@ -2,6 +2,8 @@
 
 app
   .controller('ChefOrdersController', function($scope, $mdDialog, $location, OrdersService) {
+    $scope.connected = true;
+
     $scope.endCookingTime = Date.now();
     setInterval(() => {
       $scope.endCookingTime = Date.now();
@@ -31,11 +33,25 @@ app
       item.startCooking = Date.now();
       OrdersService.startCooking(item);
       updateOrders();
+      socket.emit('chefUpdatedStatus', {email: item.email});
     };
 
     $scope.endCooking = item => {
+      console.log(item);
       item.endCooking = Date.now();
       OrdersService.endCooking(item);
       updateOrders();
+      socket.emit('chefUpdatedStatus', {email: item.email});
+      socket.emit('startDelivery', {user: item, })
     };
+
+    socket.on('connect', () => {
+      $scope.connected = true;
+      $scope.$apply();
+    });
+    socket.on('disconnect', () => {
+      $scope.connected = false;
+      $scope.$apply();
+    });
+    socket.on('newOrder', () => updateOrders());
   });
