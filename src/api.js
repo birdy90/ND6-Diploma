@@ -55,12 +55,18 @@ const registerApi = app => {
   });
 
   app.post(`${apiPrefix}/chef/orders/:status`, (req, res) => {
+    const data = Object.assign(
+      {status: {id: parseInt(req.params.status), title: req.body.statusName}},
+      req.body.additional
+    );
+    console.log(data);
     connect('orders')
       .then(collection => collection.update({_id: mongodb.ObjectId(req.body.id)},
-        {$set: {
-          [`orders.${req.body.index}.status`]: {id: parseInt(req.params.status), title: req.body.statusName},
-          [`orders.${req.body.index}.startCooking`]: parseFloat(req.body.startCooking)
-        }}))
+        {
+          $set: {
+            [`orders.${req.body.index}`]: data
+          }
+        }))
       .then(data => res.send({answer: data}));
   });
 

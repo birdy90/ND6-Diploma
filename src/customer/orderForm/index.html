@@ -34,10 +34,10 @@
                     <p flex = 'grow' layout-margin>{{order.title}}</p>
                     <p flex layout-margin>{{order.status.title}}</p>
 
-                    <p flex layout-margin ng-show="order.status.id !== statuses.failed.id || order.status.id !== statuses.failed.id">
+                    <p flex layout-margin ng-show="order.status.id !== statuses.failed.id && order.status.id !== statuses.served.id">
                         {{endTime | amDifference : order.startTime : 'seconds' | secondsToTimeString }}
                     </p>
-                    <p flex layout-margin ng-show="order.status.id === statuses.failed.id || order.status.id === statuses.failed.id">
+                    <p flex layout-margin ng-show="order.status.id === statuses.failed.id || order.status.id === statuses.served.id">
                         {{order.endTime | amDifference : order.startTime : 'seconds' | secondsToTimeString }}
                     </p>
                     <p flex layout-margin>

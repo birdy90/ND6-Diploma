@@ -39,7 +39,7 @@ app
       OrdersService.endCooking(item, {endCooking: Date.now()});
       updateOrders();
       socket.emit('chefUpdatedStatus', {email: item.email});
-      socket.emit('startDelivery', {user: item, })
+      socket.emit('startDelivery', {user: item, order: item.orders});
     };
 
     socket.on('connect', () => {
@@ -52,11 +52,15 @@ app
     });
     socket.on('newOrder', () => updateOrders());
     socket.on('deliverySuccessfull', item => {
-      OrdersService.endDelivery(item, {}, true)
-        .then(() => socket.emit('chefUpdatedStatus', {email: item.email}));
+      OrdersService.endDelivery(item, {endTime: Date.now()}, true)
+        .then(() => {
+          socket.emit('chefUpdatedStatus', {email: item.email})
+        });
     });
     socket.on('deliveryFailed', item => {
-      OrdersService.endDelivery(item, {}, false)
-        .then(() => socket.emit('chefUpdatedStatus', {email: item.email}));
+      OrdersService.endDelivery(item, {endTime: Date.now()}, false)
+        .then(() => {
+          socket.emit('chefUpdatedStatus', {email: item.email})
+        });
     });
   });

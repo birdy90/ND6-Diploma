@@ -71,9 +71,10 @@ io.on('connection', client => {
   client.on('startDelivery', data => {
     const sessions = customers.filter((item) => item.email === data.email);
     sessions.forEach(item => item.socket.emit('refreshOrders'));
-    drones.deliver(data, data.orders)
-      .then(client.emit('deliverySuccessfull', data))
-      .catch(client.emit('deliveryFailed', data));
+
+    drones.deliver(data.user, data.orders)
+      .then(response => client.emit('deliverySuccessfull', data.user))
+      .catch(response => client.emit('deliveryFailed', data.user));
   })
 });
 
