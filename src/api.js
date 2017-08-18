@@ -17,12 +17,14 @@ const registerApi = app => {
 
   // user
 
+  /* gets user info */
   app.get(`${apiPrefix}/user/:email`, (req, res) => {
     connect('orders')
       .then(collection => collection.find({email: req.params.email}).toArray())
       .then(data => res.send({answer: data}));
   });
 
+  /* updates user info */
   app.post(`${apiPrefix}/user`, (req, res) => {
     connect('orders')
       .then(collection => collection.insert(req.body.user))
@@ -31,12 +33,14 @@ const registerApi = app => {
 
   // money
 
+  /* get user's money */
   app.get(`${apiPrefix}/money/:email`, (req, res) => {
     connect('orders')
       .then(collection => collection.find({email: req.params.email}).toArray())
       .then(data => res.send({answer: data}));
   });
 
+  /* updates user's money */
   app.post(`${apiPrefix}/money/:email`, (req, res) => {
     connect('orders')
       .then(collection => collection.update({email: req.params.email}, {$set: {money: req.body.money}}))
@@ -45,6 +49,7 @@ const registerApi = app => {
 
   // chef orders
 
+  /* get all orders of specified status */
   app.get(`${apiPrefix}/chef/orders/:status`, (req, res) => {
     connect('orders')
       .then(collection => collection.aggregate([
@@ -54,30 +59,29 @@ const registerApi = app => {
       .then(data => res.send({answer: data}));
   });
 
+  /* update status of an order */
   app.post(`${apiPrefix}/chef/orders/:status`, (req, res) => {
-    const data = Object.assign(
-      {status: {id: parseInt(req.params.status), title: req.body.statusName}},
-      req.body.additional
-    );
-    console.log(data);
+    let data = {
+      [`orders.${req.body.index}.status.id`]: parseInt(req.params.status),
+      [`orders.${req.body.index}.status.title`]: req.body.statusName};
+    req.body.additional.forEach(item => {
+      data = Object.assign(data, {[`orders.${req.body.index}.${item[0]}`]: item[1]});
+    });
     connect('orders')
-      .then(collection => collection.update({_id: mongodb.ObjectId(req.body.id)},
-        {
-          $set: {
-            [`orders.${req.body.index}`]: data
-          }
-        }))
+      .then(collection => collection.update({_id: mongodb.ObjectId(req.body.id)}, {$set: data}))
       .then(data => res.send({answer: data}));
   });
 
   // orders
 
+  /* get all users's orders */
   app.get(`${apiPrefix}/orders/:email`, (req, res) => {
     connect('orders')
       .then(collection => collection.find({email: req.params.email}).toArray())
       .then(data => res.send({answer: data}));
   });
 
+  /* add an order */
   app.post(`${apiPrefix}/orders`, (req, res) => {
     connect('orders')
       .then(collection => collection.update(
@@ -87,6 +91,17 @@ const registerApi = app => {
           $set: {money: req.body.user.money},
         },
         {upsert: true})
+      )
+      .then(() => res.send({answer: 'ok'}))
+  });
+
+  /* delete order */
+  app.delete(`${apiPrefix}/orders`, (req, res) => {
+    connect('orders')
+      .then(collection => collection.update(
+        {email: req.body.user.email},
+        {$pull: {orders: req.body.order}}
+        )
       )
       .then(() => res.send({answer: 'ok'}))
   });

@@ -14,7 +14,7 @@
                 <md-card-title-text layout-margin>
                     <span class="md-headline">{{user.name}}</span>
                     <span class="md-subhead">{{user.email}}</span>
-                    <span class="md-subhead">{{user.money}} галактических кредитов</span>
+                    <span class="md-subhead">{{user.money.toFixed(4)}} галактических кредитов</span>
                 </md-card-title-text>
             </md-card-title>
 
@@ -41,8 +41,8 @@
                         {{order.endTime | amDifference : order.startTime : 'seconds' | secondsToTimeString }}
                     </p>
                     <p flex layout-margin>
-                        <md-icon class="md-secondary md-primary" ng-click="" aria-label="Отменить" ng-show="order.status.id === statuses.failed.id"> block </md-icon>
-                        <md-icon class="md-secondary md-primary" ng-click="" aria-label="Повторить со скидкой" ng-show="order.status.id === statuses.failed.id"> loop </md-icon>
+                        <md-icon class="md-secondary md-primary" ng-click="cancel(order)" aria-label="Отменить" ng-show="order.status.id === statuses.failed.id"> block </md-icon>
+                        <md-icon class="md-secondary md-primary" ng-click="reorder(order)" title="Повторить по цене {{order.price * (1 - discount / 100)}}" aria-label="Повторить со скидкой" ng-show="order.status.id === statuses.failed.id"> loop </md-icon>
                     </p>
                     <md-divider ng-hide="$last"></md-divider>
                 </md-list-item>

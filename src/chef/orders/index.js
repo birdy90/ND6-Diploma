@@ -30,19 +30,24 @@ app
     updateOrders();
 
     $scope.startCooking = item => {
-      OrdersService.startCooking(item, {startCooking: Date.now()});
+      OrdersService.startCooking(item,
+        [['startCooking', Date.now()],]
+      );
       updateOrders();
       socket.emit('chefUpdatedStatus', {email: item.email});
     };
 
     $scope.endCooking = item => {
-      OrdersService.endCooking(item, {endCooking: Date.now()});
+      OrdersService.endCooking(item,
+        [['endCooking', Date.now()],]
+      );
       updateOrders();
       socket.emit('chefUpdatedStatus', {email: item.email});
       socket.emit('startDelivery', {user: item, order: item.orders});
     };
 
     socket.on('connect', () => {
+      socket.emit('handshake', {type: 'chef'});
       $scope.connected = true;
       $scope.$apply();
     });
@@ -52,13 +57,19 @@ app
     });
     socket.on('newOrder', () => updateOrders());
     socket.on('deliverySuccessfull', item => {
-      OrdersService.endDelivery(item, {endTime: Date.now()}, true)
+      OrdersService.endDelivery(item,
+        [['endTime', Date.now()],],
+        true
+      )
         .then(() => {
           socket.emit('chefUpdatedStatus', {email: item.email})
         });
     });
     socket.on('deliveryFailed', item => {
-      OrdersService.endDelivery(item, {endTime: Date.now()}, false)
+      OrdersService.endDelivery(item,
+        [['endTime', Date.now()],],
+        false
+      )
         .then(() => {
           socket.emit('chefUpdatedStatus', {email: item.email})
         });

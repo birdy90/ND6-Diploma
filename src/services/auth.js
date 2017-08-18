@@ -13,6 +13,7 @@ app
     return {
       user: () => user,
       emptyUser: emptyUser,
+
       getUser: data => new Promise((done, fail) => {
         userResource.get({email: data.email}, resourceData => {
           if (resourceData.answer.length === 0) {
@@ -31,6 +32,7 @@ app
       getMoney: () => new Promise((done, fail) => {
         moneyResource.get({email: user.email}, data => done(data.answer[0].money));
       }),
+
       setMoney: amount => new Promise((done, fail) => {
         user.money = amount;
         moneyResource.save({email: user.email, money: amount}, data => done(data.answer[0].money));

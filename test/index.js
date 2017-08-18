@@ -26,7 +26,7 @@ describe('api tests', () => {
   before((done) => {
     connect('orders')
       .then(collection => collection.update({email: testUser.email}, {$set: testUser}, {upsert: true}))
-      .catch(err => console.log(err));
+      .catch(err => console.log(err + 'asd12'));
 
     server = supertest.agent('http://localhost:8000');
     done();

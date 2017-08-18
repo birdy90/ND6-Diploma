@@ -9,7 +9,13 @@ app
     };
 
     const chefResource = $resource('/api/chef/orders/:status', {status: '@status'});
-    const resource = $resource('/api/orders/:email', {email: '@email'});
+    const resource = $resource('/api/orders/:email', {email: '@email'}, {
+      delete: {
+        method: 'DELETE',
+        hasBody: true,
+        headers: {"Content-Type": "application/json;charset=UTF-8"}
+      }
+    });
 
     const updateChefResource = (data, callback) => chefResource.save(data, callback);
 
@@ -72,6 +78,7 @@ app
       }),
       addOrder: (item) => {
         let newItem = {
+          price: item.price,
           orders: item.id,
           startTime: Date.now(),
           endTime: null,
@@ -85,7 +92,11 @@ app
         });
         newItem.title = item.title;
         return newItem;
-      }
+      },
+      cancelOrder: (item) => new Promise((done, fail) => {
+        resource.delete(item);
+        done();
+      })
     }
   });
 
