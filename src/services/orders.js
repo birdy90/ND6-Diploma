@@ -1,6 +1,11 @@
-app
-  .factory('OrdersService', function($http, $resource, UserService) {
-    const statuses = {
+(() => {
+  'use strict';
+
+  angular.module('app')
+    .service('OrdersService', OrdersService);
+
+  function OrdersService($http, $resource, UserService) {
+    this.statuses = {
       ordered: {id: 1, title: 'Заказано'},
       cooking: {id: 2, title: 'Готовится'},
       delivery: {id: 3, title: 'Доставляется'},
@@ -8,8 +13,8 @@ app
       served: {id: 5, title: 'Подано'},
     };
 
-    const chefResource = $resource('/api/chef/orders/:status', {status: '@status'});
-    const resource = $resource('/api/orders/:email', {email: '@email'}, {
+    this.chefResource = $resource('/api/chef/orders/:status', {status: '@status'});
+    this.resource = $resource('/api/orders/:email', {email: '@email'}, {
       delete: {
         method: 'DELETE',
         hasBody: true,
@@ -17,120 +22,122 @@ app
       }
     });
 
-    const updateChefResource = (data, callback) => chefResource.save(data, callback);
+    this.updateChefResource = (data, callback) => this.chefResource.save(data, callback);
 
-    return {
-      db: resource,
+    this.getNewOrders = () => new Promise((done, fail) => {
+      this.chefResource.get({status: this.statuses.ordered.id}, data => done(data.answer));
+    });
 
-      statuses: statuses,
-      getNewOrders: () => new Promise((done, fail) => {
-        chefResource.get({status: statuses.ordered.id}, data => done(data.answer));
-      }),
-      getCookingOrders: () => new Promise((done, fail) => {
-        chefResource.get({status: statuses.cooking.id}, data => done(data.answer));
-      }),
+    this.getCookingOrders = () => new Promise((done, fail) => {
+      this.chefResource.get({status: this.statuses.cooking.id}, data => done(data.answer));
+    });
 
-      startCooking: (item, params) => new Promise((done, fail) => {
-        updateChefResource({
-          id: item._id,
-          index: item.index,
-          status: statuses.cooking.id,
-          statusName: statuses.cooking.title,
-          additional: params
-        }, data => done(data.answer));
-      }),
-      endCooking: (item, params) => new Promise((done, fail) => {
-        updateChefResource({
-          id: item._id,
-          index: item.index,
-          status: statuses.delivery.id,
-          statusName: statuses.delivery.title,
-          additional: params
-        }, data => done(data.answer));
-      }),
-      endDelivery: (item, params, success) => new Promise((done, fail) => {
-        const status = success ? statuses.served : statuses.failed;
-        updateChefResource({
-          id: item._id,
-          index: item.index,
-          status: status.id,
-          statusName: status.title,
-          additional: params
-        }, data => done(data.answer));
-      }),
+    this.startCooking = (item, params) => new Promise((done, fail) => {
+      this.updateChefResource({
+        id: item._id,
+        index: item.index,
+        status: this.statuses.cooking.id,
+        statusName: this.statuses.cooking.title,
+        additional: params
+      }, data => done(data.answer));
+    });
 
-      getUserOrders: () => new Promise((done, fail) => {
-        resource.get({email: UserService.user().email}, data => {
-          if (data.answer.length > 0) {
-            done(data.answer[0].orders)
-          } else {
-            done([])
-          }
+    this.endCooking = (item, params) => new Promise((done, fail) => {
+      this.updateChefResource({
+        id: item._id,
+        index: item.index,
+        status: this.statuses.delivery.id,
+        statusName: this.statuses.delivery.title,
+        additional: params
+      }, data => done(data.answer));
+    });
+
+    this.endDelivery = (item, params, success) => new Promise((done, fail) => {
+      const status = success ? this.statuses.served : this.statuses.failed;
+      this.updateChefResource({
+        id: item._id,
+        index: item.index,
+        status: status.id,
+        statusName: status.title,
+        additional: params
+      }, data => done(data.answer));
+    });
+
+    this.getUserOrders = () => new Promise((done, fail) => {
+      this.resource.get({email: UserService.user().email}, data => {
+        if (data.answer.length > 0) {
+          done(data.answer[0].orders)
+        } else {
+          done([])
+        }
+      });
+    });
+
+    this.getMenu = () => new Promise((done, fail) => {
+      $http.get('/media/menu.json')
+        .then((data) => {
+          const menu = data.data;
+          const menuParted = chunkify(menu, 3, true);
+          done({menu, menuParted});
         });
-      }),
-      getMenu: () => new Promise((done, fail) => {
-        $http.get('/media/menu.json')
-          .then((data) => {
-            const menu = data.data;
-            const menuParted = chunkify(menu, 3, true);
-            done({menu, menuParted});
-          });
-      }),
-      addOrder: (item) => {
-        let newItem = {
-          price: item.price,
-          orders: item.id,
-          startTime: Date.now(),
-          endTime: null,
-          startCooking: null,
-          endCooking: null,
-          status: statuses.ordered
-        };
-        resource.save({
-          user: UserService.user(),
-          item: newItem
-        });
-        newItem.title = item.title;
-        return newItem;
-      },
-      cancelOrder: (item) => new Promise((done, fail) => {
-        resource.delete(item);
-        done();
-      })
-    }
-  });
+    });
 
-function chunkify(a, n, balanced) {
-  if (n < 2)
-    return [a];
+    this.addOrder = (item) => {
+      let newItem = {
+        price: item.price,
+        orders: item.id,
+        startTime: Date.now(),
+        endTime: null,
+        startCooking: null,
+        endCooking: null,
+        status: statuses.ordered
+      };
+      this.resource.save({
+        user: UserService.user(),
+        item: newItem
+      });
+      newItem.title = item.title;
+      return newItem;
+    };
 
-  let len = a.length,
-    out = [],
-    i = 0,
-    size;
-
-  if (len % n === 0) {
-    size = Math.floor(len / n);
-    while (i < len) {
-      out.push(a.slice(i, i += size));
-    }
+    this.cancelOrder = (item) => new Promise((done, fail) => {
+      this.resource.delete(item);
+      done();
+    })
   }
 
-  else if (balanced) {
-    while (i < len) {
-      size = Math.ceil((len - i) / n--);
-      out.push(a.slice(i, i += size));
+  function chunkify(a, n, balanced) {
+    if (n < 2)
+      return [a];
+
+    let len = a.length,
+      out = [],
+      i = 0,
+      size;
+
+    if (len % n === 0) {
+      size = Math.floor(len / n);
+      while (i < len) {
+        out.push(a.slice(i, i += size));
+      }
     }
-  }
-  else {
-    n--;
-    size = Math.floor(len / n);
-    if (len % size === 0)
-      size--;
-    while (i < size * n) {
-      out.push(a.slice(i, i += size));
+
+    else if (balanced) {
+      while (i < len) {
+        size = Math.ceil((len - i) / n--);
+        out.push(a.slice(i, i += size));
+      }
     }
-    out.push(a.slice(size * n));
+    else {
+      n--;
+      size = Math.floor(len / n);
+      if (len % size === 0)
+        size--;
+      while (i < size * n) {
+        out.push(a.slice(i, i += size));
+      }
+      out.push(a.slice(size * n));
+    }
+    return out;
   }
-  return out;
-}
+})();

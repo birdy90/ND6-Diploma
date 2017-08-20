@@ -1,45 +1,49 @@
-app
-  .factory('UserService', function($resource) {
-    const emptyUser = {
+(() => {
+  'use strict';
+
+  angular.module('app')
+    .service('UserService', UserService);
+
+  function UserService($resource) {
+    this.emptyUser = {
       name: '',
       email: '',
       money: 0,
     };
-    let user = emptyUser;
 
-    const userResource = $resource('/api/user/:email', {email: '@email'});
-    const moneyResource = $resource('/api/money/:email', {email: '@email'});
+    let userInstance = this.emptyUser;
 
-    return {
-      user: () => user,
-      emptyUser: emptyUser,
+    this.userResource = $resource('/api/user/:email', {email: '@email'});
+    this.moneyResource = $resource('/api/money/:email', {email: '@email'});
 
-      getUser: data => new Promise((done, fail) => {
-        userResource.get({email: data.email}, resourceData => {
-          if (resourceData.answer.length === 0) {
-            data.money = 100;
-            userResource.save({user: data});
-            resourceData = data;
-          } else {
-            resourceData = resourceData.answer[0];
-          }
-          user = resourceData;
-          user.name = data.name;
-          done(user);
-        });
-      }),
+    this.user = () => userInstance;
 
-      getMoney: () => new Promise((done, fail) => {
-        moneyResource.get({email: user.email}, data => done(data.answer[0].money));
-      }),
+    this.getUser = data => new Promise((done, fail) => {
+      this.userResource.get({email: data.email}, resourceData => {
+        if (resourceData.answer.length === 0) {
+          data.money = 100;
+          this.userResource.save({user: data});
+          resourceData = data;
+        } else {
+          resourceData = resourceData.answer[0];
+        }
+        userInstance = resourceData;
+        userInstance.name = data.name;
+        done(userInstance);
+      });
+    });
 
-      setMoney: amount => new Promise((done, fail) => {
-        user.money = amount;
-        moneyResource.save({email: user.email, money: amount}, data => done(data.answer[0].money));
-      }),
+    this.getMoney = () => new Promise((done, fail) => {
+      this.moneyResource.get({email: userInstance.email}, data => done(data.answer[0].money));
+    });
 
-      buy: cost => {
-        user.money -= cost;
-      }
+    this.setMoney = amount => new Promise((done, fail) => {
+      userInstance.money = amount;
+      this.moneyResource.save({email: userInstance.email, money: amount}, data => done(data.answer[0].money));
+    });
+
+    this.buy = cost => {
+      userInstance.money -= cost;
     }
-  });
+  }
+})();

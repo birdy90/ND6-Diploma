@@ -12,37 +12,37 @@
                 </md-card-title-media>
 
                 <md-card-title-text layout-margin>
-                    <span class="md-headline">{{user.name}}</span>
-                    <span class="md-subhead">{{user.email}}</span>
-                    <span class="md-subhead">{{user.money.toFixed(4)}} галактических кредитов</span>
+                    <span class="md-headline">{{vm.user.name}}</span>
+                    <span class="md-subhead">{{vm.user.email}}</span>
+                    <span class="md-subhead">{{vm.user.money.toFixed(4)}} галактических кредитов</span>
                 </md-card-title-text>
             </md-card-title>
 
             <md-card-actions layout="row" layout-align="space-between center">
-                <md-button class="md-raised md-primary" ng-click="receiveMoney()">Пополнить счёт</md-button>
-                <md-button class="md-warn" ng-click="exit()">Выйти</md-button>
+                <md-button class="md-raised md-primary" ng-click="vm.receiveMoney()">Пополнить счёт</md-button>
+                <md-button class="md-warn" ng-click="vm.exit()">Выйти</md-button>
             </md-card-actions>
         </md-card>
     </div>
 
     <div flex-gt-sm="70">
 
-        <md-card layout="column" ng-show="orders.length > 0">
+        <md-card layout="column" ng-show="vm.orders.length > 0">
             <md-list ng-cloak>
 
-                <md-list-item ng-repeat="order in orders" flex>
+                <md-list-item ng-repeat="order in vm.orders" flex>
                     <p flex = 'grow' layout-margin>{{order.title}}</p>
                     <p flex layout-margin>{{order.status.title}}</p>
 
-                    <p flex layout-margin ng-show="order.status.id !== statuses.failed.id && order.status.id !== statuses.served.id">
-                        {{endTime | amDifference : order.startTime : 'seconds' | secondsToTimeString }}
+                    <p flex layout-margin ng-show="order.status.id !== vm.statuses.failed.id && order.status.id !== vm.statuses.served.id">
+                        {{vm.endTime | amDifference : order.startTime : 'seconds' | secondsToTimeString }}
                     </p>
-                    <p flex layout-margin ng-show="order.status.id === statuses.failed.id || order.status.id === statuses.served.id">
+                    <p flex layout-margin ng-show="order.status.id === vm.statuses.failed.id || order.status.id === vm.statuses.served.id">
                         {{order.endTime | amDifference : order.startTime : 'seconds' | secondsToTimeString }}
                     </p>
                     <p flex layout-margin>
-                        <md-icon class="md-secondary md-primary" ng-click="cancel(order)" aria-label="Отменить" ng-show="order.status.id === statuses.failed.id"> block </md-icon>
-                        <md-icon class="md-secondary md-primary" ng-click="reorder(order)" title="Повторить по цене {{order.price * (1 - discount / 100)}}" aria-label="Повторить со скидкой" ng-show="order.status.id === statuses.failed.id"> loop </md-icon>
+                        <md-icon class="md-secondary md-primary" ng-click="vm.cancel(order)" aria-label="Отменить" ng-show="order.status.id === vm.statuses.failed.id"> block </md-icon>
+                        <md-icon class="md-secondary md-primary" ng-click="vm.reorder(order)" title="Повторить по цене {{order.price * (1 - vm.discount / 100)}}" aria-label="Повторить со скидкой" ng-show="order.status.id === vm.statuses.failed.id"> loop </md-icon>
                     </p>
                     <md-divider ng-hide="$last"></md-divider>
                 </md-list-item>
@@ -53,14 +53,14 @@
         <div ng-cloak>
             <h2 class="md-padding">Меню</h2>
             <md-content layout-xs="column" layout="row">
-                <div flex-xs flex-gt-xs="33" layout="column" ng-repeat="menu in menuParted">
+                <div flex-xs flex-gt-xs="33" layout="column" ng-repeat="menu in vm.menuParted">
                     <md-card ng-repeat="tile in menu">
                         <img ng-src="{{tile.image}}" class="md-card-image" alt="{{tile.title}}">
                         <md-card-title>
                             <md-card-title-text>
                                 <span class="md-headline">{{tile.title}}</span>
-                                <span class="md-subhead" ng-show="tile.price > user.money">
-                                    пополните баланс на {{tile.price - user.money}} кредитов
+                                <span class="md-subhead" ng-show="tile.price > vm.user.money">
+                                    пополните баланс на {{tile.price - vm.user.money}} кредитов
                                 </span>
                             </md-card-title-text>
                         </md-card-title>
@@ -68,8 +68,8 @@
                             <p>{{tile.price}} кредитов</p>
                         </md-card-content>
                         <md-card-actions layout="row" layout-align="end center">
-                            <md-button class="md-icon-button" aria-label="Favorite" ng-show="tile.price <= user.money">
-                                <md-icon  class="md-secondary md-primary" ng-click="buy(tile)"> add_shopping_cart </md-icon>
+                            <md-button class="md-icon-button" aria-label="Favorite" ng-show="tile.price <= vm.user.money">
+                                <md-icon  class="md-secondary md-primary" ng-click="vm.buy(tile)"> add_shopping_cart </md-icon>
                             </md-button>
                         </md-card-actions>
                     </md-card>

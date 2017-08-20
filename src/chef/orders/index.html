@@ -1,6 +1,6 @@
-<md-toolbar ng-class="{'md-warn': !connected}">
+<md-toolbar ng-class="{'md-warn': !vm.connected}">
     <div class="md-toolbar-tools">
-        <h2 class="md-flex">Повар ресторана "На краю Вселенной" <span ng-show="!connected">(соединение потеряно)</span></h2>
+        <h2 class="md-flex">Повар ресторана "На краю Вселенной" <span ng-show="!vm.connected">(соединение потеряно)</span></h2>
     </div>
 </md-toolbar>
 
@@ -18,13 +18,13 @@
 
                     <md-list ng-cloak>
 
-                        <md-list-item flex ng-show="newOrders.length===0"><p>Нет заказов</p></md-list-item>
+                        <md-list-item flex ng-show="vm.newOrders.length===0"><p>Нет заказов</p></md-list-item>
 
-                        <md-list-item ng-repeat="order in newOrders" flex>
+                        <md-list-item ng-repeat="order in vm.newOrders" flex>
                             <p flex = 'grow' flex layout-margin>{{order.orders.title}}</p>
 
                             <p flex layout-margin>
-                                <md-icon class="md-secondary md-primary" ng-click="startCooking(order)" aria-label="Начать готовить"> done </md-icon>
+                                <md-icon class="md-secondary md-primary" ng-click="vm.startCooking(order)" aria-label="Начать готовить"> done </md-icon>
                             </p>
                             <md-divider ng-hide="$last"></md-divider>
                         </md-list-item>
@@ -46,17 +46,17 @@
 
                     <md-list ng-cloak>
 
-                        <md-list-item flex ng-show="cookingOrders.length===0"><p>Ничего не готовится</p></md-list-item>
+                        <md-list-item flex ng-show="vm.cookingOrders.length===0"><p>Ничего не готовится</p></md-list-item>
 
-                        <md-list-item ng-repeat="order in cookingOrders" flex>
+                        <md-list-item ng-repeat="order in vm.cookingOrders" flex>
                             <p flex = 'grow' flex layout-margin>{{order.orders.title}}</p>
 
                             <p flex layout-margin>
-                                {{endCookingTime | amDifference : order.orders.startCooking : 'seconds' | secondsToTimeString }}
+                                {{vm.endCookingTime | amDifference : order.orders.startCooking : 'seconds' | secondsToTimeString }}
                             </p>
 
                             <p flex layout-margin>
-                                <md-icon class="md-secondary md-primary" ng-click="endCooking(order)" aria-label="Начать готовить"> done </md-icon>
+                                <md-icon class="md-secondary md-primary" ng-click="vm.endCooking(order)" aria-label="Начать готовить"> done </md-icon>
                             </p>
                             <md-divider ng-hide="$last"></md-divider>
                         </md-list-item>

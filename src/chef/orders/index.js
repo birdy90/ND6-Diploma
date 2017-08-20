@@ -1,77 +1,88 @@
-'use strict';
+(() => {
+  'use strict';
 
-app
-  .controller('ChefOrdersController', function($scope, $mdDialog, $location, OrdersService) {
-    $scope.connected = true;
+  angular.module('app')
+    .controller('ChefOrdersController', ChefOrdersController);
 
-    $scope.endCookingTime = Date.now();
-    setInterval(() => {
-      $scope.endCookingTime = Date.now();
+  function ChefOrdersController($scope, $interval, OrdersService) {
+    let vm = this;
+
+    let socket = io(`http://${window.location.hostname}:8000`);
+    socket.emit('handshake', {type: 'chef'});
+
+    vm.connected = true;
+    vm.endCookingTime = Date.now();
+    vm.newOrders = [];
+    vm.cookingOrders = [];
+
+    vm.startCooking = startCooking;
+    vm.endCooking = endCooking;
+
+    updateOrders();
+    $interval(() => vm.endCookingTime = Date.now(), 1000);
+
+    socket.on('connect', onConnect);
+    socket.on('disconnect', onDisconnect);
+    socket.on('newOrder', updateOrders);
+    socket.on('deliverySuccessfull', onDeliverySuccessful);
+    socket.on('deliveryFailed', onDeliveryFailed);
+
+    function onConnect() {
+      socket.emit('handshake', {type: 'chef'});
+      vm.connected = true;
       $scope.$apply();
-    }, 1000);
+    }
 
-    $scope.newOrders = [];
-    $scope.cookingOrders = [];
+    function onDisconnect() {
+      vm.connected = false;
+      $scope.$apply();
+    }
 
-    const updateOrders = () => {
-      $scope.endCookingTime = Date.now();
+    function onDeliverySuccessful(item) {
+      OrdersService
+        .endDelivery(item, [['endTime', Date.now()],], true)
+        .then(() => {
+          socket.emit('chefUpdatedStatus', {email: item.email})
+        });
+    }
+
+    function onDeliveryFailed(item) {
+      OrdersService
+        .endDelivery(item, [['endTime', Date.now()],], false)
+        .then(() => {
+          socket.emit('chefUpdatedStatus', {email: item.email})
+        });
+    }
+
+    function updateOrders() {
+      vm.endCookingTime = Date.now();
       OrdersService.getNewOrders()
         .then(orders => {
-          $scope.newOrders = orders;
+          vm.newOrders = orders;
           $scope.$apply();
         });
       OrdersService.getCookingOrders()
         .then(orders => {
-          $scope.cookingOrders = orders;
+          vm.cookingOrders = orders;
           $scope.$apply();
         });
-    };
+    }
 
-    updateOrders();
-
-    $scope.startCooking = item => {
+    function startCooking(item) {
       OrdersService.startCooking(item,
         [['startCooking', Date.now()],]
       );
       updateOrders();
       socket.emit('chefUpdatedStatus', {email: item.email});
-    };
+    }
 
-    $scope.endCooking = item => {
+    function endCooking(item) {
       OrdersService.endCooking(item,
         [['endCooking', Date.now()],]
       );
       updateOrders();
       socket.emit('chefUpdatedStatus', {email: item.email});
       socket.emit('startDelivery', {user: item, order: item.orders});
-    };
-
-    socket.on('connect', () => {
-      socket.emit('handshake', {type: 'chef'});
-      $scope.connected = true;
-      $scope.$apply();
-    });
-    socket.on('disconnect', () => {
-      $scope.connected = false;
-      $scope.$apply();
-    });
-    socket.on('newOrder', () => updateOrders());
-    socket.on('deliverySuccessfull', item => {
-      OrdersService.endDelivery(item,
-        [['endTime', Date.now()],],
-        true
-      )
-        .then(() => {
-          socket.emit('chefUpdatedStatus', {email: item.email})
-        });
-    });
-    socket.on('deliveryFailed', item => {
-      OrdersService.endDelivery(item,
-        [['endTime', Date.now()],],
-        false
-      )
-        .then(() => {
-          socket.emit('chefUpdatedStatus', {email: item.email})
-        });
-    });
-  });
+    }
+  }
+})();

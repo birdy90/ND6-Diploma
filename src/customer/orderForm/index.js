@@ -1,41 +1,34 @@
-'use strict';
+(() => {
+  'use strict';
 
-app
-  .controller('CustomerOrderFormController', function($scope, $http, $mdDialog, $location, UserService, OrdersService) {
+  angular
+    .module('app')
+    .controller('CustomerOrderFormController', CustomerOrderFormController);
+
+  function CustomerOrderFormController($scope, $location, $interval, UserService, OrdersService) {
+    let vm = this;
+
     if (UserService.user().name === '') {
       $location.path('/');
     }
 
-    $scope.discount = 5;
+    vm.imagePath = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIipQaS685K05hq4A8MynuP86nl9cKSMRVB6TVAScZmIKkkRi2AA';
+    vm.discount = 5;
+    vm.statuses = OrdersService.statuses;
+    vm.endTime = Date.now();
+    vm.user = UserService.user();
 
-    $scope.endTime = Date.now();
-    setInterval(() => {
-      $scope.endTime = Date.now();
-      $scope.$apply();
-    }, 1000);
+    vm.menu = [];
+    vm.menuParted = [];
+    vm.orders = [];
 
-    $scope.user = UserService.user();
+    vm.receiveMoney = receiveMoney;
+    vm.buy = createOrder;
+    vm.cancel = cancelOrder;
+    vm.reorder = repeatOrder;
+    vm.exit = exit;
 
-    const refreshMoney = () => {
-      UserService.getMoney()
-        .then(data => {
-          $scope.user.money = data;
-          $scope.$apply();
-        });
-    };
-
-    $scope.imagePath = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIipQaS685K05hq4A8MynuP86nl9cKSMRVB6TVAScZmIKkkRi2AA';
-
-    $scope.statuses = OrdersService.statuses;
-
-    $scope.orders = [];
-    const refreshOrders = () => {
-      OrdersService.getUserOrders()
-        .then(orders => {
-          $scope.orders = orders || [];
-          $scope.$apply();
-        });
-    };
+    $interval(() => vm.endTime = Date.now(), 1000);
 
     UserService.getUser(UserService.user())
       .then(() => {
@@ -43,68 +36,80 @@ app
         refreshOrders();
       });
 
-    $scope.menu = [];
-    $scope.menuParted = [];
-
     OrdersService.getMenu()
       .then(({menu, menuParted}) => {
-        $scope.menu = menu;
-        $scope.menuParted = menuParted;
+        vm.menu = menu;
+        vm.menuParted = menuParted;
         $scope.$apply();
       });
 
+    socket.on('disconnect', () => vm.exit());
+    socket.on('refreshOrders', () => refreshOrders());
+    socket.on('refreshMoney', () => refreshMoney());
 
-    $scope.exit = () => {
-      $scope.user = UserService.emptyUser;
-      $location.path('/');
-    };
+    function refreshMoney() {
+      UserService.getMoney()
+        .then(data => {
+          vm.user.money = data;
+          $scope.$apply();
+        });
+    }
 
-    $scope.receiveMoney = () => {
-      $scope.user.money += parseFloat(100);
-      UserService.setMoney($scope.user.money);
+    function refreshOrders() {
+      OrdersService.getUserOrders()
+        .then(orders => {
+          vm.orders = orders || [];
+          $scope.$apply();
+        });
+    }
+
+    function receiveMoney() {
+      vm.user.money += parseFloat(100);
+      UserService.setMoney(vm.user.money);
       socket.emit('addMoney');
-    };
+    }
 
-    $scope.buy = item => {
-      $scope.user.money -= parseFloat(item.price);
+    function createOrder(item) {
+      vm.user.money -= parseFloat(item.price);
       UserService.buy(item.price);
       const newItem = OrdersService.addOrder(item);
-      $scope.orders.push(newItem);
+      vm.orders.push(newItem);
       socket.emit('newOrder');
-    };
+    }
 
-    $scope.cancel = item => {
-      $scope.user.money += item.price;
-      UserService.setMoney($scope.user.money);
+    function cancelOrder(item) {
+      vm.user.money += item.price;
+      UserService.setMoney(vm.user.money);
       OrdersService.cancelOrder({user: UserService.user(), order: item});
-      const i = $scope.orders.indexOf(item);
+      const i = vm.orders.indexOf(item);
       if (i !== -1) {
-        $scope.orders.splice(i, 1);
+        vm.orders.splice(i, 1);
       }
       socket.emit('cancelOrder');
       socket.emit('addMoney');
-    };
+    }
 
-    $scope.reorder = item => {
+    function repeatOrder(item) {
       OrdersService.cancelOrder({user: UserService.user(), order: item})
         .then(() => {
-          const i = $scope.orders.indexOf(item);
+          const i = vm.orders.indexOf(item);
           if (i !== -1) {
-            $scope.orders.splice(i, 1);
+            vm.orders.splice(i, 1);
           }
-          $scope.user.money += parseFloat((item.price * $scope.discount / 100).toFixed(4));
-          UserService.setMoney($scope.user.money);
-          item.price *= (1 - $scope.discount / 100);
+          vm.user.money += parseFloat((item.price * vm.discount / 100).toFixed(4));
+          UserService.setMoney(vm.user.money);
+          item.price *= (1 - vm.discount / 100);
           const newItem = OrdersService.addOrder(item);
-          $scope.orders.push(newItem);
+          vm.orders.push(newItem);
           socket.emit('newOrder');
           socket.emit('addMoney');
         });
       socket.emit('cancelOrder');
-    };
+    }
 
-    socket.on('disconnect', () => $scope.exit());
-
-    socket.on('refreshOrders', () => refreshOrders());
-    socket.on('refreshMoney', () => refreshMoney());
-  });
+    function exit() {
+      vm.user = UserService.emptyUser;
+      $location.path('/');
+    }
+  }
+})();

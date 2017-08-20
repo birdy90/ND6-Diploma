@@ -1,31 +1,41 @@
-'use strict';
+(() => {
+  'use strict';
 
-app
-  .controller('CustomerAuthController', function($scope, $mdDialog, $location, UserService) {
-    $scope.user = {};
+  angular
+    .module('app')
+    .controller('CustomerAuthController', CustomerAuthController);
 
-    $scope.$on('$viewContentLoaded', function (e) {
-      showPrompt($scope);
-    });
+  function CustomerAuthController($scope, $mdDialog, $location, UserService) {
+    let vm = this;
 
-    $scope.submit = () => {
+    $scope.$on('$viewContentLoaded', onViewContentLoaded);
+
+    vm.user = {};
+    vm.submit = onSubmit;
+
+    function onSubmit() {
       if ($scope.loginForm.$valid) {
         $mdDialog.hide($scope.loginForm);
-        UserService.getUser($scope.user)
+        UserService.getUser(vm.user)
           .then(data => {
+            vm.user = data;
             socket.emit('handshake', {type: 'customer', email: UserService.user().email});
-            $scope.user = data;
-            $scope.$apply();
             $location.path("/list");
           });
       }
-    };
+    }
 
-    const showPrompt = form => {
+    function onViewContentLoaded(e) {
+      showPrompt(vm);
+    }
+
+    function showPrompt(form) {
       $mdDialog.show({
         controller: 'CustomerAuthController',
+        controllerAs: 'vm',
         templateUrl: '/static/customer/auth/form.html',
         escapeToClose: false,
       });
-    };
-  });
+    }
+  }
+})();

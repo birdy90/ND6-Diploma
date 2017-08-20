@@ -1,5 +1,5 @@
 <md-dialog flex="30">
-    <form ng-cloak name="loginForm" ng-submit="submit()">
+    <form ng-cloak name="loginForm" ng-submit="vm.submit()">
         <md-dialog-content>
             <div class="md-dialog-content" layout="column">
                 <h2>Представьтесь, пожалуйста</h2>
@@ -7,12 +7,12 @@
                 <div layout="column">
                     <md-input-container>
                         <label>Имя</label>
-                        <input name="name" ng-model="user.name" type="text" ng-init="user.name='Григорий Бедердинов'" required>
+                        <input name="name" ng-model="vm.user.name" type="text" ng-init="vm.user.name='Григорий Бедердинов'" required>
                     </md-input-container>
 
                     <md-input-container>
                         <label>Email</label>
-                        <input name="email" ng-model="user.email" type="email" ng-init="user.email='gob@live.ru'" required>
+                        <input name="email" ng-model="vm.user.email" type="email" ng-init="vm.user.email='gob@live.ru'" required>
                     </md-input-container>
                 </div>
             </div>
