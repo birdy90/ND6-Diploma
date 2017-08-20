@@ -90,7 +90,7 @@
         endTime: null,
         startCooking: null,
         endCooking: null,
-        status: statuses.ordered
+        status: this.statuses.ordered
       };
       this.resource.save({
         user: UserService.user(),

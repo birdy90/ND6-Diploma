@@ -22,6 +22,10 @@ const start = (port) =>
   handleApi();
   handleErrors();
 
+  app.use(function(req, res, next) {
+    res.status(404).send(`404. Страница '${req.url}' не найдена`);
+  });
+
   server.listen(port);
 };
 
@@ -39,14 +43,13 @@ const handleStaticRoutes = () => {
   });
 };
 
-const handleClientApps = () => {
-  app.get(/^\/$/i, (req, res) => {
-    res.sendFile(`${__dirname}/customer/index.html`)
-  });
+const customerHandler = (req, res) => res.sendFile(`${__dirname}/customer/index.html`);
+const chefHandler = (req, res) => res.sendFile(`${__dirname}/chef/index.html`);
 
-  app.get(/^\/kitchen(\/)?$/i, (req, res) => {
-    res.sendFile(`${__dirname}/chef/index.html`)
-  });
+const handleClientApps = () => {
+  app.get(/^\/$/i, customerHandler);
+  app.get(/^\/list(\/)?$/i, customerHandler);
+  app.get(/^\/kitchen(\/)?$/i, chefHandler);
 };
 
 const handleApi = () => {

@@ -2,13 +2,13 @@
   'use strict';
 
   angular.module('app')
-    .config($routeProvider => {
+    .config(($routeProvider, $locationProvider) => {
+      $locationProvider.html5Mode(true);
       $routeProvider
-        .when('/', {
+        .when('/kitchen', {
           templateUrl: '/static/chef/orders/index.html',
           controller: 'ChefOrdersController',
           controllerAs: 'vm'
-        })
-        .otherwise({redirectTo: '/'});
+        });
     });
 })();

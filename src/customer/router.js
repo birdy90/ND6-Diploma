@@ -3,7 +3,8 @@
 
   angular
     .module('app')
-    .config(($routeProvider) => {
+    .config(($routeProvider, $locationProvider) => {
+      $locationProvider.html5Mode(true);
       $routeProvider
         .when('/', {
           templateUrl: '/static/customer/auth/index.html',
