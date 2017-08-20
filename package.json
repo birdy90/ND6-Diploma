@@ -4,7 +4,8 @@
   "description": "Kitchen application for robotic delivery",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -16,6 +17,11 @@
     "url": "https://github.com/birdy90/ND6-Diploma/issues"
   },
   "homepage": "https://github.com/birdy90/ND6-Diploma#readme",
+  "devDependencies": {
+    "chai": "^4.1.1",
+    "mocha": "^3.5.0",
+    "supertest": "^3.0.0"
+  },
   "dependencies": {
     "angular": "^1.6.5",
     "angular-animate": "^1.6.5",
@@ -25,15 +31,12 @@
     "angular-resource": "^1.6.5",
     "angular-route": "^1.6.5",
     "body-parser": "^1.17.2",
-    "chai": "^4.1.1",
     "express": "^4.15.3",
-    "mocha": "^3.5.0",
     "moment": "^2.18.1",
     "mongodb": "^2.2.31",
     "netology-fake-drone-api": "^1.0.1",
     "socket.io": "^2.0.3",
     "socket.io-client": "^2.0.3",
-    "socketio": "^1.0.0",
-    "supertest": "^3.0.0"
+    "socketio": "^1.0.0"
   }
 }
