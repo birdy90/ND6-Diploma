@@ -5,13 +5,15 @@ const api = require('./api');
 
 const http = require('http');
 const server = http.createServer(app);
-require('./sockets')(server);
+const utils = require('./utils');
+const socket = require('./sockets');
+
 
 const start = (port) =>
 {
   port = port || 8000;
 
-  app.use(function (req, res, next) { console.log(`${req.method} ${req.url}`); next(); });
+  // app.use(function (req, res, next) { console.log(`${req.method} ${req.url}`); next(); });
 
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({extended: true}));
@@ -26,6 +28,11 @@ const start = (port) =>
     res.status(404).send(`404. Страница '${req.url}' не найдена`);
   });
 
+  utils.findReadyOrders(api, port, email => {
+    socket.customers().filter(t => t.email === email).forEach(user => user.socket.emit('refreshOrders'));
+  });
+
+  socket.start(server, port);
   server.listen(port);
 };
 

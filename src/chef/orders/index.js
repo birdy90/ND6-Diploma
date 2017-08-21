@@ -39,47 +39,60 @@
     }
 
     function onDeliverySuccessful(item) {
+      const time = Date.now();
+      item.orders.endTime = time;
+      item.orders.status = OrdersService.statuses.served;
       OrdersService
-        .endDelivery(item, [['endTime', Date.now()],], true)
+        .endDelivery(item, [['endTime', time],], true)
         .then(() => {
-          socket.emit('chefUpdatedStatus', {email: item.email})
+          socket.emit('chefUpdatedStatus', {email: item.email});
+          socket.emit('deliveryEnded', {user: item, order: item.orders});
         });
     }
 
     function onDeliveryFailed(item) {
+      const time = Date.now();
+      item.orders.endTime = time;
+      item.orders.status = OrdersService.statuses.failed;
       OrdersService
-        .endDelivery(item, [['endTime', Date.now()],], false)
+        .endDelivery(item, [['endTime', time],], false)
         .then(() => {
-          socket.emit('chefUpdatedStatus', {email: item.email})
+          socket.emit('chefUpdatedStatus', {email: item.email});
+          socket.emit('deliveryEnded', {user: item, order: item.orders});
         });
     }
 
     function updateOrders() {
-      vm.endCookingTime = Date.now();
-      OrdersService.getNewOrders()
-        .then(orders => {
-          vm.newOrders = orders;
-          $scope.$apply();
-        });
-      OrdersService.getCookingOrders()
-        .then(orders => {
-          vm.cookingOrders = orders;
-          $scope.$apply();
-        });
+      return new Promise((done, fail) => {
+        vm.endCookingTime = Date.now();
+        OrdersService.getNewOrders()
+          .then(orders => {
+            vm.newOrders = orders;
+            $scope.$apply();
+            done();
+          });
+        OrdersService.getCookingOrders()
+          .then(orders => {
+            vm.cookingOrders = orders;
+            $scope.$apply();
+            done();
+          });
+      });
     }
 
     function startCooking(item) {
       OrdersService.startCooking(item,
         [['startCooking', Date.now()],]
       );
-      updateOrders();
-      socket.emit('chefUpdatedStatus', {email: item.email});
+      updateOrders()
+        .then(() => socket.emit('chefUpdatedStatus', {email: item.email}));
     }
 
     function endCooking(item) {
-      OrdersService.endCooking(item,
-        [['endCooking', Date.now()],]
-      );
+      const time = Date.now();
+      item.orders.endCooking = time;
+      OrdersService
+        .endCooking(item, [['endCooking', time],]);
       updateOrders();
       socket.emit('chefUpdatedStatus', {email: item.email});
       socket.emit('startDelivery', {user: item, order: item.orders});

@@ -108,5 +108,6 @@ const registerApi = app => {
 };
 
 module.exports = {
+  prefix: apiPrefix,
   register: registerApi
 };
