@@ -1,13 +1,12 @@
 describe('auth service testing', () => {
   let service;
-  let mock;
   let spies = {};
 
   beforeEach(module('app'));
   beforeEach(() => {
     inject($injector => {
       service = $injector.get('UserService');
-      spies.userResourceGet = chai.spy(service.userResource.get);
+      spies.userResourceGet = chai.spy.on(service.userResource, 'get');
     });
   });
 
